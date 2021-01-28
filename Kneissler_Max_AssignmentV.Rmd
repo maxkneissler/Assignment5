@@ -48,7 +48,7 @@ remote repository, we can access earlier versions easily if the results were not
 desirable. Additionally, in case of computer problems, we know that the entire
 history of the project is outsourced and can be easily accessed again by logging
 into the Github account. Another benefit will not be used in this project, as 
-I will not truely collaborate with a colleague. However, it is advisable to use
+I will not truly collaborate with a colleague. However, it is advisable to use
 GitHub in collaborative projects to avoid miscommunications. 
 
 I will proceed by staging smaller steps but committing just parts with a 
@@ -56,6 +56,25 @@ meaningful process such that the development history is not too crowded and
 the steps are comprehensive. Next, we will familiarize ourselves with the API 
 structure of ticketmaster.com.  
 
+
+## Exercise 2: Getting to know the API
+
+Getting to know the structure of the API queries on the website of 
+ticketmaster.com, we see that the URI-format requires a package, a version, an
+api key and a resource. First, we make use of the API Explorer to obtain the 
+access key, which is offered by the provider. The key is set up in a different 
+R-file `api_tm` and treated secretly to maintain a high certain level of 
+security and to get used to this file structure for personal keys on other APIs.
+
+```{r api_key, warning = FALSE, message = FALSE}
+source("api_tm.R")
+```
+
+
+In this assignment, we will use the Discovery package as well as version v2, as 
+recommended in the `Venue Search` part. In addition, we deal with a rate limit 
+of 5,000 calls per day and a limit of 5 requests per second, which will be taken 
+account for in the queries. 
 
 
 
