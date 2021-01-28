@@ -11,3 +11,19 @@ knitr::opts_knit$set(rrot.dir = "C:/Users/user/Desktop/Uni Tuebingen",
       "/Masterstudium/1. Semester/Data Science Project Management/Assignment5")
 ```
 
+## Introduction
+
+The goal of this assignment to use a public Github repository to improve the
+version control system and to manage the development history of this project
+carefully. We will interact with the API of ticketmaster.com in a basic and an
+advanced way to obtain data from event venues in Germany. We will make use of
+this data by plotting a map of Germany, indicating the event locations in
+Germany. In addition, this precedurer is repeated for another European country.
+I was working together with Elias Rudolph (Student ID: 5629871) and Nicolas 
+Mollier (Student ID: 5640171)in this assignment to deepen the exchange about 
+API and GitHub.
+
+My public repository can be found by:
+https://github.com/maxkneissler/Assignment5
+
+To solve the assignment, the following packages are needed:
