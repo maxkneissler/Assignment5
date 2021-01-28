@@ -1,0 +1,13 @@
+---
+title: "Assignment5"
+author: "Max Kneißler"
+date: "28 1 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(rrot.dir = "C:/Users/user/Desktop/Uni Tuebingen",
+      "/Masterstudium/1. Semester/Data Science Project Management/Assignment5")
+```
+
