@@ -18,7 +18,7 @@ version control system and to manage the development history of this project
 carefully. We will interact with the API of ticketmaster.com in a basic and an
 advanced way to obtain data from event venues in Germany. We will make use of
 this data by plotting a map of Germany, indicating the event locations in
-Germany. In addition, this precedurer is repeated for another European country.
+Germany. In addition, this procedure is repeated for another European country.
 I was working together with Elias Rudolph (Student ID: 5629871) and Nicolas 
 Mollier (Student ID: 5640171)in this assignment to deepen the exchange about 
 API and GitHub.
@@ -27,3 +27,37 @@ My public repository can be found by:
 https://github.com/maxkneissler/Assignment5
 
 To solve the assignment, the following packages are needed:
+
+```{r library, warning = FALSE, message = FALSE}
+library(jsonlite)
+library(httr)
+library(rlist)
+library(tidyverse)
+library(naniar)
+library(ggplot2)
+```
+
+
+## Exercise 1: Setting up a new GitHub repository
+
+As I have not used GitHub before, I created an account and set up a repository
+`Assignment5`, which can be accessed by the link presented in the introductory
+part. In the following, when dealing with API requests, GitHub allows us to 
+have a more efficient version control system. Through the local as well as the 
+remote repository, we can access earlier versions easily if the results were not
+desirable. Additionally, in case of computer problems, we know that the entire
+history of the project is outsourced and can be easily accessed again by logging
+into the Github account. Another benefit will not be used in this project, as 
+I will not truely collaborate with a colleague. However, it is advisable to use
+GitHub in collaborative projects to avoid miscommunications. 
+
+I will proceed by staging smaller steps but committing just parts with a 
+meaningful process such that the development history is not too crowded and 
+the steps are comprehensive. Next, we will familiarize ourselves with the API 
+structure of ticketmaster.com.  
+
+
+
+
+
+
