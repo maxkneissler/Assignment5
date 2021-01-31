@@ -65,6 +65,10 @@ api key and a resource. First, we make use of the API Explorer to obtain the
 access key, which is offered by the provider. The key is set up in a different 
 R-file `api_tm` and treated secretly to maintain a high certain level of 
 security and to get used to this file structure for personal keys on other APIs.
+In addition, we have a look at the `robots.txt` website of ticketmaster.com, 
+which clarifies what data should not be retrieved. However, we can conclude
+that the data we are interested is not of big issue since the robots.txt-file
+mostly deals with the disallowing of personal data and images.
 
 ```{r api_key, warning = FALSE, message = FALSE}
 source("api_tm.R")
@@ -77,6 +81,74 @@ of 5,000 calls per day and a limit of 5 requests per second, which will be taken
 account for in the queries. 
 
 
+## Exercise 3: Interacting with the API - the basics
+
+Our first request deals with the content of event venues in Germany. Therefore,
+we perform a GET-request to extract the desired data. In order to check the 
+success of our query, we check the status before extracting the content.
+
+```{r first_GET, warning = FALSE, message = FALSE}
+# Query in proper format
+query <- 
+  paste0(
+    "https://app.ticketmaster.com/discovery/v2/venues.json?countryCode=DE&apikey=",
+    tm_api)
+
+# Apply the query
+res_venuesGermany <- GET(query)
+
+
+# Check the status
+status_code(res_venuesGermany)
+
+# Extract the content
+contentTM <- fromJSON(content(res_venuesGermany, as = "text"))
+```
+
+We can see that `contentTM` includes the three subfolders `embedded`, `links`
+and `page`. We can observe that 4738 elements on 238 pages were imported. 
+The folder `venues` on the other hand contains several subfolders like images,
+city, country, name, type, id, etc. In order to follow the assignment, we are 
+interested in extracting the seven characteristics `name`, `city`, `postalCode`,
+`address`, `url`, `longitude` and `latitude`. In addition, some proper recoding
+is conducted.
+
+```{r char_extract, warning = FALSE, message = FALSE}
+# Content as data frame
+venue_data <- tibble(contentTM[["_embedded"]][["venues"]])
+
+
+# extract only the desired entries
+venue_data <- venue_data[,c(1, 10, 8, 12, 5)] 
+
+# longitude and latitude as "location"
+venue_data$latitude <- 
+  contentTM[["_embedded"]][["venues"]][["location"]][["latitude"]] 
+venue_data$latitude <- as.double(venue_data$latitude)
+
+venue_data$longitude <- 
+  contentTM[["_embedded"]][["venues"]][["location"]][["longitude"]]
+venue_data$longitude <- as.double(venue_data$longitude)
+
+# some recoding of the variables
+venue_data$city <- as.character(venue_data$city)
+venue_data$address <- as.character(venue_data$address)
+
+# many missing values with locations -> just first two rows exist
+glimpse(venue_data)
+```
+
+
+## Exercise 4: Interacting with the API - advanced
+
+
+
+
+## Exercise 5: Visualizing the extracted data
+
+
+
+## Exercise 6: Event locations in other countries
 
 
 
