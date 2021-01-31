@@ -141,12 +141,113 @@ glimpse(venue_data)
 
 ## Exercise 4: Interacting with the API - advanced
 
+As mentioned in the description of the GET-request, we could access 4738 
+elements from ticketmaster.com, however, we had a look on only the first page
+so far. In order to access all possible observations, we make use of loop to
+go through the different pages. First, we look at the exact amount of entries
+since they may vary over time as a flexible function
 
+```{r count_entries, warning = FALSE, message = FALSE}
+entries <- as.numeric(contentTM[["page"]][["totalElements"]])
+pages <- floor(entries/20)  # number of complete pages
+remainder <- entries - 20*pages
+```
+
+Then, we create a data frame with the entries, which we like to collect, to 
+make the request faster. As an empty table is created, we start to loop through
+the different pages. The remaining observations are added manually to prevent
+issues with filling the created table.
+
+```{r data_collection, warning = FALSE, message = FALSE}
+venueDataComplete <- tibble(
+  name = character(entries),
+  city = character(entries),
+  postalCode = character(entries),
+  address = character(entries),
+  url = character(entries),
+  longitude = character(entries),
+  latitude = character(entries),
+)
+
+# loop over all pages
+for (page in 1:pages) {
+  
+query <- 
+  paste0(
+    "https://app.ticketmaster.com/discovery/v2/venues.json?countryCode=DE&page=+",
+           page,"apikey=",tm_api)
+  
+res_venuesAll <- GET(query)
+contentAll <- fromJSON(content(res_venuesGermany, as = "text"))
+  
+# choose the wanted sizes
+venueFilter <- tibble(contentAll[["_embedded"]][["venues"]])
+  
+# extract only the desired entries
+venueFilter <- venueFilter[,c(1, 10, 8, 12, 5)]
+# change the coding
+venueFilter$city <- as.character(venueFilter$city)
+venueFilter$address <- as.character(venueFilter$address)
+# add longitude and latitude
+venueFilter$latitude <- 
+            contentAll[["_embedded"]][["venues"]][["location"]][["latitude"]] 
+venueFilter$longitude <- 
+            contentAll[["_embedded"]][["venues"]][["location"]][["longitude"]]
+  
+venueDataComplete[(20 * i - 19):(20 * i),] <- venueFilter
+
+# Prevent exceeding the rate limit
+Sys.sleep(0.2)
+}
+
+# Incomplete last page is added manually
+i <- i + 1
+
+query <- 
+  paste0(
+    "https://app.ticketmaster.com/discovery/v2/venues.json?countryCode=DE&page=+",
+         page,"apikey=",tm_api)
+
+res_venuesAll <- GET(query)
+contentAll <- fromJSON(content(res_venuesGermany, as = "text"))
+
+# choose the wanted sizes
+venueFilter <- tibble(contentAll[["_embedded"]][["venues"]])
+
+# extract only the desired entries
+venueFilter <- venueFilter[,c(1, 10, 8, 12, 5)]
+# change the coding
+venueFilter$city <- as.character(venueFilter$city)
+venueFilter$address <- as.character(venueFilter$address)
+# add longitude and latitude
+venueFilter$latitude <- 
+            contentAll[["_embedded"]][["venues"]][["location"]][["latitude"]] 
+venueFilter$longitude <- 
+            contentAll[["_embedded"]][["venues"]][["location"]][["longitude"]]
+
+venueDataComplete[(20 * i - 19):(entries),] <- venueFilter
+```
 
 
 ## Exercise 5: Visualizing the extracted data
 
+We now make use of the extracted data to visualize the venues of the different
+events in Germany. In the assignment, it is already given a map-code of Germany,
+which we will use as well.
 
+```{r warning = FALSE, message = FALSE}
+ggplot() +
+  geom_polygon(
+    aes(x = long, y = lat, group = group), 
+                  data = map_data("world", region = "Germany"),
+    fill = "grey90",color = "black") +
+  theme_void() + coord_quickmap() +
+  labs(title = "Event locations across Germany", 
+                            caption = "Source: ticketmaster.com") +
+  theme(title = element_text(size=8, face='bold'),
+        plot.caption = element_text(face = "italic")) +
+  geom_point(venueDataComplete, mapping = aes(longitude, latitude))
+```
 
 ## Exercise 6: Event locations in other countries
 
