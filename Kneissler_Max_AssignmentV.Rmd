@@ -315,7 +315,7 @@ In order to demonstrate that the request actually works, I will apply the
 query to Belgium and Italy to plot the venues in the respective map. Just a few
 adjustments are necessary to obtain the desired result.
 
-```{r Spain, warning = FALSE, message = FALSE}
+```{r Belgium, warning = FALSE, message = FALSE}
 # Apply the query
 res_venuesBELG <- GET("https://app.ticketmaster.com/discovery/v2/venues",
                        query = list(countryCode = "BE",
@@ -360,7 +360,7 @@ for (page in 1:pages) {
   
 res_venuesAll <- GET("https://app.ticketmaster.com/discovery/v2/venues",
                        query = list(countryCode = "BE",
-                                    page = page,
+                                    page = 32,
                                    apikey = tm_api))
 status_code(res_venuesAll)
 contentAll <- fromJSON(content(res_venuesAll, as = "text"))
@@ -384,7 +384,7 @@ venueFilter$longitude <- content[["location"]][["longitude"]]
 
 
 # Filling into the final form (without longitude and latitude)
-venueDataBE[(20 * 1 - 19):(1*page),] <- venueFilter
+venueDataBE[(20 * page - 19):(20*page),] <- venueFilter
 
 # Prevent exceeding the rate limit
 Sys.sleep(0.2)
@@ -399,7 +399,7 @@ res_venuesAll <- GET("https://app.ticketmaster.com/discovery/v2/venues",
                                     page = page,
                                    apikey = tm_api))
 res_venuesAll <- GET(query)
-contentAll <- fromJSON(content(res_venuesGermany, as = "text"))
+contentAll <- fromJSON(content(res_venuesAll, as = "text"))
 
 # Extraction from same subfolder
 content <- contentAll[["_embedded"]][["venues"]]
@@ -428,44 +428,48 @@ Belgium.
 
 ```{r Belgium_plot, warning = FALSE, message = FALSE}
 
-ggplot() +
+ggplot(venueDataBE, mapping = aes(longitude, latitude)) +
   geom_polygon(
     aes(x = long, y = lat, group = group), 
-                  data = map_data("world", region = "Germany"),
+                  data = map_data("world", region = "Belgium"),
     fill = "grey90",color = "black") +
   theme_void() + coord_quickmap() +
-  labs(title = "Event locations across Germany", 
+  labs(title = "Event locations across Belgium", 
                             caption = "Source: ticketmaster.com") +
   theme(title = element_text(size=8, face='bold'),
         plot.caption = element_text(face = "italic"))
-  geom_point(venueDataBE, mapping = aes(longitude, latitude))
+
 ```
 
-```{r Italy, warning = FALSE, message = FALSE}
+
+We will apply the same procedure to Austria.
+
+
+```{r Austria, warning = FALSE, message = FALSE}
 # Apply the query
-res_venuesGermany <- GET("https://app.ticketmaster.com/discovery/v2/venues",
-                       query = list(countryCode = "DE",
+res_venuesAT <- GET("https://app.ticketmaster.com/discovery/v2/venues",
+                       query = list(countryCode = "AT",
                                    apikey = tm_api))
 
 # Extract the content
-contentTM <- fromJSON(content(res_venuesGermany, as = "text"))
+contentAT <- fromJSON(content(res_venuesAT, as = "text"))
 
 
-entries <- as.numeric(contentTM[["page"]][["totalElements"]])
+entries <- as.numeric(contentAT[["page"]][["totalElements"]])
 pages <- floor(entries/20)  # number of complete pages
 remainder <- entries - 20*pages
 
 
 
 # Creating the final file
-venueDataComplete <- tibble(
+venueDataAT <- tibble(
   name = character(entries),
   city = character(entries),
   postalCode = character(entries),
   address = character(entries),
   url = character(entries),
-# longitude = character(entries),
-# latitude = character(entries)
+  longitude = character(entries),
+  latitude = character(entries)
 )
 
 # Introducing a temporary File
@@ -475,18 +479,54 @@ venueFilter <- tibble(
   postalCode = character(20),
   address = character(20),
   url = character(20),
-# longitude = character(20),
-# latitude = character(20)
+  longitude = character(20),
+  latitude = character(20)
   )
 
 # Loop over all pages
 for (page in 1:pages) {
   
 res_venuesAll <- GET("https://app.ticketmaster.com/discovery/v2/venues",
-                       query = list(countryCode = "DE",
+                       query = list(countryCode = "AT",
                                     page = page,
                                    apikey = tm_api))
 status_code(res_venuesAll)
+contentAll <- fromJSON(content(res_venuesAll, as = "text"))
+
+# Extraction from same subfolder
+content <- contentAll[["_embedded"]][["venues"]]
+  
+# Fill the data frame with the respective data
+venueFilter$name <- content[["name"]]
+
+venueFilter$city <- content[["city"]][["name"]]
+
+venueFilter$postalCode <- content[["postalCode"]]
+
+venueFilter$address <- content[["address"]][["line1"]]
+
+venueFilter$url <- content[["url"]]
+
+venueFilter$latitude <- content[["location"]][["latitude"]]
+venueFilter$longitude <- content[["location"]][["longitude"]]
+
+
+# Filling into the final form (without longitude and latitude)
+venueDataAT[(20 * page - 19):(20*page),] <- venueFilter
+
+# Prevent exceeding the rate limit
+Sys.sleep(0.2)
+}
+
+
+# Incomplete last page is added manually
+page <- page + 1
+
+res_venuesAll <- GET("https://app.ticketmaster.com/discovery/v2/venues",
+                       query = list(countryCode = "AT",
+                                    page = page,
+                                   apikey = tm_api))
+res_venuesAll <- GET(query)
 contentAll <- fromJSON(content(res_venuesAll, as = "text"))
 
 # Extraction from same subfolder
@@ -510,43 +550,25 @@ venueFilter$url <- content[["url"]]
 
 
 # Filling into the final form (without longitude and latitude)
-venueDataComplete[(20 * page - 19):(20*page),] <- venueFilter
-
-# Prevent exceeding the rate limit
-Sys.sleep(0.2)
-}
-
-
-# Incomplete last page is added manually
-page <- page + 1
-
-res_venuesAll <- GET("https://app.ticketmaster.com/discovery/v2/venues",
-                       query = list(countryCode = "DE",
-                                    page = page,
-                                   apikey = tm_api))
-res_venuesAll <- GET(query)
-contentAll <- fromJSON(content(res_venuesGermany, as = "text"))
-
-# Extraction from same subfolder
-content <- contentAll[["_embedded"]][["venues"]]
-  
-# Fill the data frame with the respective data
-venueFilter$name <- content[["name"]]
-
-venueFilter$city <- content[["city"]][["name"]]
-
-venueFilter$postalCode <- content[["postalCode"]]
-
-venueFilter$address <- content[["address"]][["line1"]]
-
-venueFilter$url <- content[["url"]]
-
-# Longitude and Latitude excluded to make the request work
-
-# venueFilter$latitude <- content[["location"]][["latitude"]]
-# venueFilter$longitude <- content[["location"]][["longitude"]]
-
-
-# Filling into the final form (without longitude and latitude)
-venueDataComplete[(20 * page - 19):(entries),] <- venueFilter
+venueDataAT[(20 * page - 19):(entries),] <- venueFilter
 ```
+
+As the data is extracted, we make once again use of the map to plot the borders
+with the venues.
+
+```{r Austria_plot, warning = FALSE, message = FALSE}
+
+ggplot() +
+  geom_polygon(
+    aes(x = long, y = lat, group = group), 
+                  data = map_data("world", region = "Austria"),
+    fill = "grey90",color = "black") +
+  theme_void() + coord_quickmap() +
+  labs(title = "Event locations across Germany", 
+                            caption = "Source: ticketmaster.com") +
+  theme(title = element_text(size=8, face='bold'),
+        plot.caption = element_text(face = "italic"))
+  geom_point(venueDataAT, mapping = aes(longitude, latitude))
+```
+
+
