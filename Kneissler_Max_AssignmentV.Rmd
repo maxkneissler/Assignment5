@@ -293,7 +293,7 @@ We now make use of the extracted data to visualize the venues of the different
 events in Germany. In the assignment, it is already given a map-code 
 of Germany, which we use.
 
-```{r warning = FALSE, message = FALSE}
+```{r German_plot warning = FALSE, message = FALSE}
 # Recoding the coordinates as numeric values
 venueDataComplete$longitude <- as.double(venueDataComplete$longitude)
 venueDataComplete$latitude <- as.double(venueDataComplete$latitude)
@@ -516,7 +516,6 @@ contentDK <- fromJSON(content(res_venuesDK, as = "text"))
 entries <- as.numeric(contentDK[["page"]][["totalElements"]])
 pages <- floor(entries/100)  # number of complete pages
 remainder <- entries - 100*(pages)
-
 
 
 
