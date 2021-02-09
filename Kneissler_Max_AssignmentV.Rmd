@@ -1,7 +1,7 @@
 ---
 title: "Assignment V: GitHub and the ticketmaster.com API"
 author: "Max Kneißler"
-date: "08 2 2021"
+date: "09 02 2021"
 output: html_document
 ---
 
@@ -42,7 +42,7 @@ library(kableExtra)
 ## Exercise 1: Setting up a new GitHub repository
 
 As I have not used GitHub before, I created an account and set up the repository
-`Assignment5`, which can be accessed by the link presented in the introductory
+"Assignment5", which can be accessed by the link presented in the introductory
 part. In the following, when dealing with API requests, GitHub allows us to 
 have a more efficient version control system. Through the local as well as the 
 remote repository, we can access earlier versions easily if the results were not
@@ -55,13 +55,13 @@ GitHub in collaborative projects to avoid miscommunications.
 I will proceed by staging smaller steps but committing just parts with a 
 meaningful process such that the development history is not too cluttered and 
 the steps are comprehensive. Next, we will familiarize ourselves with the API 
-structure of `ticketmaster.com`.  
+structure of "ticketmaster.com".  
 
 
 ## Exercise 2: Getting to know the API
 
 Getting to know the structure of the API queries on the website of 
-`ticketmaster.com`, we notice that the root URL requires a package, a version, 
+"ticketmaster.com", we notice that the root URL requires a package, a version, 
 an api key and a resource. First, we make use of the API Explorer to obtain the 
 access key, which is offered by the provider. The key is set up in a different 
 R-file `api_tm` and treated secretly to maintain a high level of security. Thus, 
@@ -661,6 +661,7 @@ ggplot() +
 
 As for Belgium, we see that most events take place either in Copenhagen or in
 Aarhus, which are the biggest cities in Denmark. However, there are venues all
-over the country.
+over the country. Compared to Belgium, there are way more event venues in 
+Denmark, indicated by the higher density in the plot.
 
 
